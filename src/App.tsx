@@ -137,7 +137,7 @@ const App = () => {
     setSignature(signature);
 
     notification.success({
-      message: "Transaction Successful",
+      message: "Signing Successful",
       description: (
         <div>
           Signature:<br/>{signature}
