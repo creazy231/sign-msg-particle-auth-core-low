@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AvalancheTestnet } from '@particle-network/chains';
 import { AAWrapProvider, SendTransactionMode, SmartAccount } from '@particle-network/aa';
-import {particleAuth, thirdpartyAuth, connect, getConnectCaptcha} from '@particle-network/auth-core'
+import {particleAuth, thirdpartyAuth, connect, getConnectCaptcha, SocialAuthType} from '@particle-network/auth-core'
 import { ethers } from 'ethers';
 import { walletEntryPlugin } from '@particle-network/wallet'
 import { notification } from 'antd';
@@ -71,7 +71,7 @@ const App = () => {
           const code = paramsObj.code;
           const nonce = paramsObj.nonce;
 
-          const socialType = localStorage.getItem('socialType');
+          const socialType = localStorage.getItem('socialType') as SocialAuthType;
 
           await connect({
             socialType,
