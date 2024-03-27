@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AvalancheTestnet } from '@particle-network/chains';
 import { AAWrapProvider, SendTransactionMode, SmartAccount } from '@particle-network/aa';
-import { particleAuth, thirdpartyAuth, connect } from '@particle-network/auth-core'
+import {particleAuth, thirdpartyAuth, connect, getConnectCaptcha} from '@particle-network/auth-core'
 import { ethers } from 'ethers';
 import { walletEntryPlugin } from '@particle-network/wallet'
 import { notification } from 'antd';
@@ -29,6 +29,8 @@ const App = () => {
   const [balance, setBalance] = useState(null);
   const [address, setAddress] = useState(null);
   const [signature, setSignature] = useState("Not signed yet");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
 
   const smartAccount = new SmartAccount(particleAuth.ethereum, {
     projectId: process.env.REACT_APP_PROJECT_ID,
@@ -127,12 +129,22 @@ const App = () => {
 
   const executeUserMessageSign = async () => {
     notification.info({
-      message: "Signing message..."
+      message: "Confirm identity for zeroone.art"
     })
-    const signer = customProvider.getSigner();
+    const particleProvider = new ethers.providers.Web3Provider(particleAuth.ethereum, "any");
+    const signer = particleProvider.getSigner();
+
+    const address = await signer.getAddress();
+    console.log(address);
 
     const message = "Hello World";
+
     const signature = await signer.signMessage(message);
+    console.log(signature);
+
+    console.log("Verifying signature...");
+    const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+    console.log(recoveredAddress);
 
     setSignature(signature);
 
@@ -145,6 +157,22 @@ const App = () => {
       )
     });
   };
+
+  const handleSendCode = async () => {
+    await getConnectCaptcha({
+      email: email,
+    });
+  }
+
+  const handleEmailLogin = async () => {
+    await connect({
+      email: email,
+      code: code,
+      chain: AvalancheTestnet,
+    });
+
+    setAddress(await smartAccount.getAddress());
+  }
 
   return (
     <div className="App">
@@ -165,6 +193,15 @@ const App = () => {
           <button className="sign-button other-button" onClick={() => handleLogin('')}>
             <img src="https://i.imgur.com/VRftF1b.png" alt="Twitter" className="icon"/>
           </button>
+          Sign in with Email & Code:
+          <div>
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+            <button onClick={() => handleSendCode()} className="full-width">Send Code</button>
+          </div>
+          <div>
+            <input type="text" placeholder="X X X X X X" value={code} onChange={(e) => setCode(e.target.value)}/>
+            <button onClick={() => handleEmailLogin()} className="full-width">Sign in with Email & Code</button>
+          </div>
         </div>
       ) : (
         <div className="profile-card">

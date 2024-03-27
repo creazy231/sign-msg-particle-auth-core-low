@@ -7,7 +7,7 @@
   font-family: Arial, sans-serif;
   padding: 20px;
   background-color: #f6f6f6;
-  box-shadow: 
+  box-shadow:
   10px -10px 30px 10px #f50018, /* soft blue glow on bottom right */
   -10px 10px 30px 10px #8929e7; /* soft purple glow on top left */
 }
@@ -44,8 +44,20 @@ button {
   transition: background-color 0.2s;
 }
 
+button.full-width {
+  width: 100%;
+}
+
 button:hover {
   background-color: #0056b3;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .logo-section {
